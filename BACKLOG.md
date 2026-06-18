@@ -4,10 +4,9 @@
 - [x] **Dateline-crossing routes** — routes now unwrap longitude so a Pacific crossing /
   circumnavigation takes the short path across the antimeridian instead of the long way
   across the map. (fixed in v0.1.1)
-- [ ] **Celestial basemap renderer** — RA/Dec star chart with constellations & bright
-  stars (port from ethupgrademap). Needed for the Exoplanets showcase. → v0.2.0
-- [ ] **Glyph/icon markers** — per-status emoji/symbol markers (e.g. ☀️ summer / ❄️ winter
-  Olympics) via `statusIcons` config. → v0.2.0
+- [x] **Celestial basemap renderer** — RA/Dec star chart with constellations & bright
+  stars. (v0.2.0)
+- [x] **Glyph/icon markers** — per-status emoji markers via `statusIcons`. (v0.2.0)
 - [ ] Optional: fit-to-route on load for very wide (round-the-world) datasets.
 
 ## Showcase datasets to map

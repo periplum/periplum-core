@@ -52,7 +52,11 @@ basemaps use `lat`/`lon`; celestial basemaps use `ra`/`dec`.
   Optional `crs: "EPSG4326"`, `subdomains`, `noWrap`, `tms`.
 - `image` — a single equirectangular image overlay (great for a global Moon/Mars map);
   uses `imageUrl` and `bounds` (default whole globe), rendered in `L.CRS.EPSG4326`.
-- `celestial` — (planned) the RA/Dec star-chart renderer.
+- `celestial` — the RA/Dec star-chart renderer (constellations + bright stars for
+  orientation). Placements use `ra`/`dec`.
+
+Marker styling: colour by `statusColors`, or set `statusIcons` (status → emoji, e.g.
+`{ "Summer": "☀️", "Winter": "❄️" }`) for glyph markers.
 
 ## Showcase consumers
 

@@ -1,6 +1,6 @@
 /*!
  * Periplum — a chronological history map across configurable basemaps
- * (Earth / Moon / Mars tiles, image overlays, celestial). v0.1.2
+ * (Earth / Moon / Mars tiles, image overlays, celestial). v0.2.0
  *
  * Usage (in a consumer page, after loading Leaflet):
  *   Periplum.render({ title, dataUrl, repo, basemaps:[…], statusColors:{…}, theme:{…}, seo:{…}, favicon })
@@ -57,7 +57,11 @@
       ".playback-control a:hover{background:#2a2a3a}" +
       ".leaflet-tooltip.pp-label{background:transparent;border:none;box-shadow:none;font-weight:600;font-size:11px;padding:0}" +
       ".pp-img-bm .leaflet-tooltip.pp-label{color:#fff;text-shadow:0 0 4px #000,0 0 4px #000}" +
-      ".leaflet-popup-content{font-size:13px;line-height:1.5}.pp-pair{display:inline-block;background:#eef4ff;color:#1b5fb0;border-radius:3px;padding:0 5px;font-size:11px;font-weight:600}";
+      ".leaflet-popup-content{font-size:13px;line-height:1.5}.pp-pair{display:inline-block;background:#eef4ff;color:#1b5fb0;border-radius:3px;padding:0 5px;font-size:11px;font-weight:600}" +
+      ".pp-sky .leaflet-container{background:#05060f}" +
+      ".leaflet-tooltip.pp-refstar{background:transparent;border:none;box-shadow:none;color:#aeb8e8;font-size:10px;padding:0;text-shadow:0 0 4px #000}" +
+      ".leaflet-tooltip.pp-constel{background:transparent;border:none;box-shadow:none;color:#5b6bb0;font-size:11px;font-style:italic;letter-spacing:1px;padding:0;text-transform:uppercase}" +
+      ".leaflet-div-icon.pp-glyph{background:none;border:none;box-shadow:none;font-size:18px;line-height:24px;text-align:center}";
     document.head.appendChild(css);
   }
 
@@ -80,8 +84,60 @@
   }
 
   // ---- basemap construction ----
+  // ---- Celestial reference sky (real bright stars + constellations, shared) ----
+  function skyXY(ra, dec) { return [dec, -ra]; }
+  var PP_CONSTEL = [
+    { name: "Orion", label: [84, -4], lines: [[0,1],[0,4],[1,6],[4,5],[5,6],[4,3],[6,2]],
+      stars: [[88.79,7.41,0.5],[81.28,6.35,1.6],[78.63,-8.20,0.1],[86.94,-9.67,2.1],[85.19,-1.94,1.7],[84.05,-1.20,1.7],[83.00,-0.30,2.2]] },
+    { name: "Cygnus", label: [304, 36], lines: [[0,1],[1,4],[3,1],[1,2]],
+      stars: [[310.36,45.28,1.3],[305.56,40.26,2.2],[311.55,33.97,2.5],[296.24,45.13,2.9],[292.68,27.96,3.1]] },
+    { name: "Aquila", label: [296, 4], lines: [[1,0],[0,2],[0,3],[0,4],[0,5]],
+      stars: [[297.70,8.87,0.8],[296.56,10.61,2.7],[298.83,6.41,3.7],[291.37,3.11,3.4],[286.35,13.86,3.0],[302.83,-0.82,3.2]] },
+    { name: "Auriga", label: [82, 41], lines: [[0,1],[1,2],[2,3],[3,4],[4,0]],
+      stars: [[79.17,46.00,0.1],[89.88,44.95,1.9],[89.93,37.21,2.6],[81.57,28.61,1.6],[74.95,33.17,2.7]] },
+    { name: "Cassiopeia", label: [13, 66], lines: [[0,1],[1,2],[2,3],[3,4]],
+      stars: [[2.29,59.15,2.3],[10.13,56.54,2.2],[14.18,60.72,2.2],[21.45,60.24,2.7],[28.60,63.67,3.4]] },
+    { name: "Ursa Major", label: [185, 62], lines: [[0,1],[1,2],[2,3],[3,0],[3,4],[4,5],[5,6]],
+      stars: [[165.93,61.75,1.8],[165.46,56.38,2.4],[178.46,53.69,2.4],[183.86,57.03,3.3],[193.51,55.96,1.8],[200.98,54.93,2.0],[206.89,49.31,1.9]] },
+    { name: "Taurus", label: [66, 12], lines: [[0,1],[0,2],[0,3]],
+      stars: [[68.98,16.51,0.9],[64.74,15.63,3.6],[67.15,19.18,3.5],[81.57,28.61,1.6]] }
+  ];
+  var PP_REFSTARS = [[279.23,38.78,0.0,"Vega"],[213.92,19.18,0.0,"Arcturus"],[152.09,11.97,1.4,"Regulus"],[116.33,28.03,1.2,"Pollux"],[114.83,5.22,0.3,"Procyon"]];
+  var PP_PLEIADES = [[56.87,24.11,2.9],[56.46,24.37,3.9],[57.29,24.05,3.6],[56.58,23.95,4.2],[56.30,24.47,4.3]];
+  var PP_TRIANGLE = [[279.23,38.78],[310.36,45.28],[297.70,8.87]];
+  function ppMagR(m) { return Math.max(0.7, 3.4 - 0.45 * m); }
+  function ppBgStar(map, s) {
+    var mk = L.circleMarker(skyXY(s[0], s[1]), { radius: ppMagR(s[2]), stroke: false, fillColor: "#e9eeff", fillOpacity: 0.95, interactive: false }).addTo(map);
+    if (s[3]) mk.bindTooltip(s[3], { permanent: true, direction: "right", className: "pp-refstar", offset: [4, 0] });
+  }
+  function drawCelestialSky(map) {
+    var seed = 20240313; function rnd() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+    for (var i = 0; i < 160; i++) L.circleMarker(skyXY(rnd() * 360, rnd() * 180 - 90), { radius: rnd() * 0.9 + 0.3, stroke: false, fillColor: "#aab4e6", fillOpacity: rnd() * 0.4 + 0.12, interactive: false }).addTo(map);
+    var g = { color: "#202a4d", weight: 0.5, interactive: false };
+    for (var ra = 0; ra <= 360; ra += 30) L.polyline([skyXY(ra, -90), skyXY(ra, 90)], g).addTo(map);
+    for (var dec = -60; dec <= 60; dec += 30) L.polyline([skyXY(0, dec), skyXY(360, dec)], g).addTo(map);
+    L.polyline([skyXY(0, 0), skyXY(360, 0)], { color: "#34407a", weight: 1, dashArray: "4 5", interactive: false }).addTo(map);
+    L.polyline(PP_TRIANGLE.concat([PP_TRIANGLE[0]]).map(function (p) { return skyXY(p[0], p[1]); }), { color: "#3b4a86", weight: 0.8, dashArray: "2 6", interactive: false }).addTo(map);
+    PP_CONSTEL.forEach(function (c) {
+      c.lines.forEach(function (ln) { var a = c.stars[ln[0]], b = c.stars[ln[1]]; L.polyline([skyXY(a[0], a[1]), skyXY(b[0], b[1])], { color: "#46568f", weight: 0.9, opacity: 0.7, interactive: false }).addTo(map); });
+      c.stars.forEach(function (s) { ppBgStar(map, s); });
+      L.circleMarker(skyXY(c.label[0], c.label[1]), { radius: 0, opacity: 0, fillOpacity: 0, interactive: false }).addTo(map).bindTooltip(c.name, { permanent: true, direction: "center", className: "pp-constel" });
+    });
+    PP_REFSTARS.forEach(function (s) { ppBgStar(map, s); });
+    PP_PLEIADES.forEach(function (s) { ppBgStar(map, s); });
+    L.circleMarker(skyXY(56.5, 25.6), { radius: 0, opacity: 0, fillOpacity: 0, interactive: false }).addTo(map).bindTooltip("Pleiades", { permanent: true, direction: "center", className: "pp-constel" });
+  }
+
   function makeMap(bm) {
     var div = document.getElementById("pp-view-" + bm.id);
+    if (bm.type === "celestial") {
+      var cm = L.map(div, { crs: L.CRS.Simple, minZoom: bm.minZoom != null ? bm.minZoom : -3, maxZoom: bm.maxZoom || 4, zoomSnap: 0.25, attributionControl: !!bm.attribution });
+      drawCelestialSky(cm);
+      var band = bm.bounds || [skyXY(0, -30), skyXY(360, 75)];
+      div.classList.add("pp-img-bm", "pp-sky");
+      bm._fit = function () { cm.fitBounds(band); };
+      return cm;
+    }
     if (bm.type === "image") {
       var bounds = bm.bounds || [[-90, -180], [90, 180]];
       var im = L.map(div, { crs: L.CRS.EPSG4326, minZoom: bm.minZoom != null ? bm.minZoom : 0, maxZoom: bm.maxZoom || 6, attributionControl: !!bm.attribution });
@@ -158,8 +214,10 @@
         var map = maps[p.map];
         var r = routes[p.map] || (routes[p.map] = { poly: null, coords: [], lastLon: null });
         var ll = placementLatLng(bm, p, r);
-        var mk = L.circleMarker(ll, { radius: 7, fillColor: colorFor(it.status), color: "#fff", weight: 1.5, fillOpacity: 0.9 })
-          .addTo(map).bindPopup(popupHtml(it, p));
+        var glyph = cfg.statusIcons && cfg.statusIcons[it.status];
+        var mk = glyph
+          ? L.marker(ll, { icon: L.divIcon({ html: glyph, className: "pp-glyph", iconSize: [24, 24], iconAnchor: [12, 12] }) }).addTo(map).bindPopup(popupHtml(it, p))
+          : L.circleMarker(ll, { radius: 7, fillColor: colorFor(it.status), color: "#fff", weight: 1.5, fillOpacity: 0.9 }).addTo(map).bindPopup(popupHtml(it, p));
         if (p.label) mk.bindTooltip(esc(p.label), { permanent: true, direction: "right", className: "pp-label", offset: [6, 0] });
         dyn.push(mk);
         r.coords.push(ll);
@@ -233,11 +291,16 @@
     }
 
     function addLegend(map) {
-      if (!cfg.statusColors) return;
+      var icons = cfg.statusIcons, keys = Object.keys(icons || statusColors);
+      if (!keys.length) return;
       var lc = L.control({ position: "bottomright" });
       lc.onAdd = function () {
         var d = L.DomUtil.create("div", "pp-legend"); var html = "";
-        Object.keys(statusColors).forEach(function (k) { html += "<i style='background:" + statusColors[k] + "'></i>" + esc(k) + "<br>"; });
+        keys.forEach(function (k) {
+          html += (icons && icons[k])
+            ? "<span style='margin-right:6px'>" + esc(icons[k]) + "</span>" + esc(k) + "<br>"
+            : "<i style='background:" + (statusColors[k] || "#888") + "'></i>" + esc(k) + "<br>";
+        });
         html += "<span class='ln'></span>" + esc(cfg.routeLabel || "Chronological route");
         d.innerHTML = html; L.DomEvent.disableClickPropagation(d); return d;
       };
@@ -281,5 +344,5 @@
       .catch(function (err) { console.error("Periplum: failed to load data:", err); });
   }
 
-  global.Periplum = { render: render, version: "0.1.2" };
+  global.Periplum = { render: render, version: "0.2.0" };
 })(window);
