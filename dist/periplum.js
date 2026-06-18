@@ -1,6 +1,6 @@
 /*!
  * Periplum — a chronological history map across configurable basemaps
- * (Earth / Moon / Mars tiles, image overlays, celestial). v0.1.1
+ * (Earth / Moon / Mars tiles, image overlays, celestial). v0.1.2
  *
  * Usage (in a consumer page, after loading Leaflet):
  *   Periplum.render({ title, dataUrl, repo, basemaps:[…], statusColors:{…}, theme:{…}, seo:{…}, favicon })
@@ -85,7 +85,7 @@
     if (bm.type === "image") {
       var bounds = bm.bounds || [[-90, -180], [90, 180]];
       var im = L.map(div, { crs: L.CRS.EPSG4326, minZoom: bm.minZoom != null ? bm.minZoom : 0, maxZoom: bm.maxZoom || 6, attributionControl: !!bm.attribution });
-      L.imageOverlay(bm.imageUrl, bounds).addTo(im);
+      L.imageOverlay(bm.imageUrl, bounds, { attribution: bm.attribution || "" }).addTo(im);
       im.setMaxBounds(bounds);
       div.classList.add("pp-img-bm");
       bm._fit = function () { im.fitBounds(bounds); };
@@ -281,5 +281,5 @@
       .catch(function (err) { console.error("Periplum: failed to load data:", err); });
   }
 
-  global.Periplum = { render: render, version: "0.1.1" };
+  global.Periplum = { render: render, version: "0.1.2" };
 })(window);
