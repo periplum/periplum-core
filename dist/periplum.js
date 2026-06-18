@@ -1,9 +1,9 @@
 /*!
- * Periplus — a chronological history map across configurable basemaps
+ * Periplum — a chronological history map across configurable basemaps
  * (Earth / Moon / Mars tiles, image overlays, celestial). v0.1.0
  *
  * Usage (in a consumer page, after loading Leaflet):
- *   Periplus.render({ title, dataUrl, repo, basemaps:[…], statusColors:{…}, theme:{…}, seo:{…}, favicon })
+ *   Periplum.render({ title, dataUrl, repo, basemaps:[…], statusColors:{…}, theme:{…}, seo:{…}, favicon })
  *
  * Data (dataUrl -> JSON): { items: [ { name, date, status, pairing?,
  *   placements: [ { map, lat, lon, label, popup:{…} } ] } ] }
@@ -64,7 +64,7 @@
   // ---- DOM scaffold: header + one container per basemap ----
   function buildDom(cfg) {
     var t = document.createElement("div"); t.id = "pp-title";
-    t.innerHTML = "<span>" + esc(cfg.title || "Periplus") + "</span><span id='pp-count'></span>" +
+    t.innerHTML = "<span>" + esc(cfg.title || "Periplum") + "</span><span id='pp-count'></span>" +
       "<span class='pp-spacer'></span>";
     var sw = document.createElement("div"); sw.id = "pp-switch"; sw.setAttribute("role", "group"); sw.setAttribute("aria-label", "Switch basemap");
     t.appendChild(sw);
@@ -107,7 +107,7 @@
   }
 
   function render(cfg) {
-    if (typeof L === "undefined") { console.error("Periplus: Leaflet (L) must be loaded first."); return; }
+    if (typeof L === "undefined") { console.error("Periplum: Leaflet (L) must be loaded first."); return; }
     injectHead(cfg);
     buildDom(cfg);
 
@@ -268,8 +268,8 @@
         showAll();
         setBasemap(cfg.basemaps[0].id);
       })
-      .catch(function (err) { console.error("Periplus: failed to load data:", err); });
+      .catch(function (err) { console.error("Periplum: failed to load data:", err); });
   }
 
-  global.Periplus = { render: render, version: "0.1.0" };
+  global.Periplum = { render: render, version: "0.1.0" };
 })(window);

@@ -1,22 +1,23 @@
-# Periplus
+# Periplum
 
 A small, config-driven engine for **chronological history maps**: a sequence of named,
 dated points placed on one or more basemaps — Earth, the Moon, Mars, or the celestial
 sphere — connected as a route, with timeline playback and a date slider.
 
-> *Periplus* (Greek περίπλους, "a sailing-around") — an ancient manuscript that listed
-> places in the order a voyage reached them. This tool is the same idea, interactive.
+> ***periplum*** — from the ancient Greek
+> *periplus*: an account of a coastal voyage, listing places in
+> the order they are reached.
 
 ## Use it
 
-Load Leaflet, then this engine, then call `Periplus.render(config)`:
+Load Leaflet, then this engine, then call `Periplum.render(config)`:
 
 ```html
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/oyatrino/periplus@v0.1.0/dist/periplus.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/periplum/periplum@v0.1.0/dist/periplum.js"></script>
 <script>
-Periplus.render({
+Periplum.render({
   title: "My voyage",
   dataUrl: "data.json",
   repo: "https://github.com/me/my-map",
@@ -53,11 +54,12 @@ basemaps use `lat`/`lon`; celestial basemaps use `ra`/`dec`.
   uses `imageUrl` and `bounds` (default whole globe), rendered in `L.CRS.EPSG4326`.
 - `celestial` — (planned) the RA/Dec star-chart renderer.
 
-## Consumers
+## Showcase consumers
 
-- [periplus-magellan](https://github.com/oyatrino/periplus-magellan) — Magellan's
-  circumnavigation (Earth, static).
-- [periplus-lunar](https://github.com/oyatrino/periplus-lunar) — crewed & robotic Moon
-  landings (Moon, updated from Wikidata).
+- [periplum/magellan](https://github.com/periplum/magellan) — Magellan's circumnavigation
+  (Earth, static).
+- [periplum/lunar](https://github.com/periplum/lunar) — crewed & robotic Moon landings
+  (Moon, updated from Wikidata).
+- [periplum/worldcup](https://github.com/periplum/worldcup) — FIFA World Cup host cities.
 
 Released by git tag; served via jsDelivr (`@v0.1.0`). Pin a version in your consumer.
