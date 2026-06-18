@@ -1,6 +1,6 @@
 /*!
  * Periplum — a chronological history map across configurable basemaps
- * (Earth / Moon / Mars tiles, image overlays, celestial). v0.1.0
+ * (Earth / Moon / Mars tiles, image overlays, celestial). v0.1.1
  *
  * Usage (in a consumer page, after loading Leaflet):
  *   Periplum.render({ title, dataUrl, repo, basemaps:[…], statusColors:{…}, theme:{…}, seo:{…}, favicon })
@@ -126,9 +126,19 @@
     var sliderInputs = [], sliderLabels = [];
     var fitted = {};
 
-    function placementLatLng(bm, p) {
+    // Place a point, unwrapping longitude so a route takes the shorter path and
+    // crosses the antimeridian correctly (e.g. a Pacific crossing / circumnavigation)
+    // instead of drawing the long way across the map. `r.lastLon` carries a running
+    // unwrapped longitude through the sequence so markers stay attached to the line.
+    function placementLatLng(bm, p, r) {
       if (bm.type === "celestial") return [p.dec, -p.ra];
-      return [p.lat, p.lon];
+      var lon = p.lon;
+      if (r && r.lastLon !== null && r.lastLon !== undefined) {
+        while (lon - r.lastLon > 180) lon -= 360;
+        while (lon - r.lastLon < -180) lon += 360;
+      }
+      if (r) r.lastLon = lon;
+      return [p.lat, lon];
     }
 
     function popupHtml(it, p) {
@@ -146,12 +156,12 @@
       (it.placements || []).forEach(function (p) {
         var bm = bmById[p.map]; if (!bm) return;
         var map = maps[p.map];
-        var ll = placementLatLng(bm, p);
+        var r = routes[p.map] || (routes[p.map] = { poly: null, coords: [], lastLon: null });
+        var ll = placementLatLng(bm, p, r);
         var mk = L.circleMarker(ll, { radius: 7, fillColor: colorFor(it.status), color: "#fff", weight: 1.5, fillOpacity: 0.9 })
           .addTo(map).bindPopup(popupHtml(it, p));
         if (p.label) mk.bindTooltip(esc(p.label), { permanent: true, direction: "right", className: "pp-label", offset: [6, 0] });
         dyn.push(mk);
-        var r = routes[p.map] || (routes[p.map] = { poly: null, coords: [] });
         r.coords.push(ll);
         if (r.poly) { r.poly.addLatLng(ll); }
         else if (r.coords.length > 1) { r.poly = L.polyline(r.coords, { color: routeColor, weight: 1.5, dashArray: "6 4", opacity: 0.6 }).addTo(map); dyn.push(r.poly); }
@@ -271,5 +281,5 @@
       .catch(function (err) { console.error("Periplum: failed to load data:", err); });
   }
 
-  global.Periplum = { render: render, version: "0.1.0" };
+  global.Periplum = { render: render, version: "0.1.1" };
 })(window);
