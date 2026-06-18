@@ -15,7 +15,7 @@ Load Leaflet, then this engine, then call `Periplum.render(config)`:
 ```html
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/periplum/periplum@v0.1.0/dist/periplum.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/periplum/periplum-core@v0.1.2/dist/periplum.js"></script>
 <script>
 Periplum.render({
   title: "My voyage",
@@ -60,6 +60,8 @@ basemaps use `lat`/`lon`; celestial basemaps use `ra`/`dec`.
   (Earth, static).
 - [periplum/lunar](https://github.com/periplum/lunar) — crewed & robotic Moon landings
   (Moon, updated from Wikidata).
-- [periplum/worldcup](https://github.com/periplum/worldcup) — FIFA World Cup host cities.
+- [periplum/worldcup-soccer](https://github.com/periplum/worldcup-soccer) — World Cup host
+  cities (Earth).
 
-Released by git tag; served via jsDelivr (`@v0.1.0`). Pin a version in your consumer.
+Start your own from the **[periplum template](https://github.com/periplum/periplum)**
+("Use this template"). Released by git tag; served via jsDelivr. Pin a version in your consumer.
