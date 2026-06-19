@@ -1,3 +1,5 @@
+<img src="logo.svg" alt="Periplum" width="84" align="left">
+
 # Periplum
 
 A small, config-driven engine for **chronological history maps**: a sequence of named,
@@ -87,3 +89,7 @@ Marker styling: colour by `statusColors`, or set `statusIcons` (status → emoji
 
 Start your own from the **[periplum template](https://github.com/periplum/periplum)**
 ("Use this template"). Released by git tag; served via jsDelivr. Pin a version in your consumer.
+
+## License & credits
+
+MIT © Corentin Méhat ([@cmehat](https://github.com/cmehat)) / [oyatrino](https://github.com/oyatrino).
