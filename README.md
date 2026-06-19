@@ -1,4 +1,7 @@
-<img src="logo.svg" alt="Periplum" width="84" align="left">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="logo/periplum-lockup-dark.svg">
+  <img src="logo/periplum-lockup.svg" alt="Periplum" height="60">
+</picture>
 
 # Periplum
 
