@@ -9,6 +9,18 @@ sphere — connected as a route, with timeline playback and a date slider.
 
 ## Use it
 
+### Easiest: start from the template
+
+Don't wire anything up by hand — use the **[periplum template](https://github.com/periplum/periplum)**:
+
+1. On [periplum/periplum](https://github.com/periplum/periplum), click **“Use this template” → Create a new repository**.
+2. Edit **`index.html`** (title, `basemaps`, `statusColors` / `statusIcons`) and **`data.json`** (your points).
+3. **Settings → Pages →** deploy from `main`. Your map is live at `https://YOUR-USER.github.io/YOUR-REPO/`.
+
+The template already pins this engine, ships the auto-update workflows (engine-version bump + data refresh), and works out of the box. See the live showcases: [magellan](https://github.com/periplum/magellan), [worldcup-soccer](https://github.com/periplum/worldcup-soccer), [lunar](https://github.com/periplum/lunar), [exoplanets](https://github.com/periplum/exoplanets), [olympics](https://github.com/periplum/olympics).
+
+### Or wire it up by hand
+
 Load Leaflet, then this engine, then call `Periplum.render(config)`:
 
 ```html
