@@ -1,6 +1,6 @@
 /*!
  * Periplum — a chronological history map across configurable basemaps
- * (Earth / Moon / Mars tiles, image overlays, celestial). v0.3.0
+ * (Earth / Moon / Mars tiles, image overlays, celestial). v0.3.1
  *
  * By Corentin Méhat (@cmehat) / Oyatrino Solutions · MIT License
  *
@@ -184,18 +184,22 @@
     var sliderInputs = [], sliderLabels = [];
     var fitted = {};
 
-    // Place a point, unwrapping longitude so a route takes the shorter path and
-    // crosses the antimeridian correctly (e.g. a Pacific crossing / circumnavigation)
-    // instead of drawing the long way across the map. `r.lastLon` carries a running
-    // unwrapped longitude through the sequence so markers stay attached to the line.
+    // Place a point. By default markers sit at their true longitude (±180).
+    // Opt in with cfg.unwrapRoute (for a true voyage / circumnavigation like Magellan)
+    // to carry a running unwrapped longitude so the route takes the short path across
+    // the antimeridian. Leave it off for datasets that hop around the globe (protocol
+    // cities, World Cup, Olympics) — otherwise the running unwrap scatters markers
+    // across multiple world copies.
     function placementLatLng(bm, p, r) {
       if (bm.type === "celestial") return [p.dec, -p.ra];
       var lon = p.lon;
-      if (r && r.lastLon !== null && r.lastLon !== undefined) {
-        while (lon - r.lastLon > 180) lon -= 360;
-        while (lon - r.lastLon < -180) lon += 360;
+      if (cfg.unwrapRoute && r) {
+        if (r.lastLon !== null && r.lastLon !== undefined) {
+          while (lon - r.lastLon > 180) lon -= 360;
+          while (lon - r.lastLon < -180) lon += 360;
+        }
+        r.lastLon = lon;
       }
-      if (r) r.lastLon = lon;
       return [p.lat, lon];
     }
 
@@ -354,5 +358,5 @@
     }
   }
 
-  global.Periplum = { render: render, version: "0.3.0" };
+  global.Periplum = { render: render, version: "0.3.1" };
 })(window);
