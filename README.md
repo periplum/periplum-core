@@ -9,7 +9,7 @@ A small, config-driven engine for **chronological history maps**: a sequence of 
 dated points placed on one or more basemaps — Earth, the Moon, Mars, or the celestial
 sphere — connected as a route, with timeline playback and a date slider.
 
-> *periplum* — from the ancient Greek *periplus* (περίπλους, "a sailing-around"): an
+> *periplum* — evoking the ancient Greek περίπλους (*periplous*, "a sailing-around"): an
 > account of a coastal voyage, listing places in the order they are reached.
 
 ## Use it

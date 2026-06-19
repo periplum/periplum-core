@@ -1,6 +1,6 @@
 /*!
  * Periplum — a chronological history map across configurable basemaps
- * (Earth / Moon / Mars tiles, image overlays, celestial). v0.3.1
+ * (Earth / Moon / Mars tiles, image overlays, celestial). v0.3.2
  *
  * By Corentin Méhat (@cmehat) / Oyatrino Solutions · MIT License
  *
@@ -60,10 +60,11 @@
       ".leaflet-tooltip.pp-label{background:transparent;border:none;box-shadow:none;font-weight:600;font-size:11px;padding:0}" +
       ".pp-img-bm .leaflet-tooltip.pp-label{color:#fff;text-shadow:0 0 4px #000,0 0 4px #000}" +
       ".leaflet-popup-content{font-size:13px;line-height:1.5}.pp-pair{display:inline-block;background:#eef4ff;color:#1b5fb0;border-radius:3px;padding:0 5px;font-size:11px;font-weight:600}" +
-      ".pp-sky .leaflet-container{background:#05060f}" +
+      ".pp-sky,.pp-sky.leaflet-container{background:#05060f}" +
       ".leaflet-tooltip.pp-refstar{background:transparent;border:none;box-shadow:none;color:#aeb8e8;font-size:10px;padding:0;text-shadow:0 0 4px #000}" +
       ".leaflet-tooltip.pp-constel{background:transparent;border:none;box-shadow:none;color:#5b6bb0;font-size:11px;font-style:italic;letter-spacing:1px;padding:0;text-transform:uppercase}" +
-      ".leaflet-div-icon.pp-glyph{background:none;border:none;box-shadow:none;font-size:18px;line-height:24px;text-align:center}";
+      ".leaflet-div-icon.pp-glyph{background:none;border:none;box-shadow:none;font-size:18px;line-height:24px;text-align:center}" +
+      ".pp-credit{display:flex;align-items:center;gap:5px;color:#fff;opacity:.6;font-size:12px;text-decoration:none}.pp-credit:hover{opacity:1}.pp-credit img{display:block}";
     document.head.appendChild(css);
   }
 
@@ -79,6 +80,11 @@
       a.innerHTML = "<svg height='20' width='20' viewBox='0 0 16 16' fill='currentColor'><path d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.64 7.64 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z'/></svg>";
       t.appendChild(a);
     }
+    var pp = document.createElement("a");
+    pp.className = "pp-credit"; pp.href = "https://periplum.js.org";
+    pp.target = "_blank"; pp.rel = "noopener noreferrer"; pp.title = "Built with Periplum";
+    pp.innerHTML = "<img src='https://cdn.jsdelivr.net/gh/periplum/periplum-core@v0.3.2/logo/periplum-mark-dark.svg' width='22' height='22' alt='Periplum'>";
+    t.appendChild(pp);
     document.body.appendChild(t);
     cfg.basemaps.forEach(function (bm) {
       var d = document.createElement("div"); d.className = "pp-view"; d.id = "pp-view-" + bm.id; document.body.appendChild(d);
@@ -358,5 +364,5 @@
     }
   }
 
-  global.Periplum = { render: render, version: "0.3.1" };
+  global.Periplum = { render: render, version: "0.3.2" };
 })(window);
