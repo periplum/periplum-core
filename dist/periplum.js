@@ -2,7 +2,7 @@
  * Periplum — a chronological history map across configurable basemaps
  * (Earth / Moon / Mars tiles, image overlays, celestial). v0.3.0
  *
- * By Corentin Méhat (@cmehat) / oyatrino · MIT License
+ * By Corentin Méhat (@cmehat) / Oyatrino Solutions · MIT License
  *
  * Usage (in a consumer page, after loading Leaflet):
  *   Periplum.render({ title, dataUrl, repo, basemaps:[…], statusColors:{…}, theme:{…}, seo:{…}, favicon })

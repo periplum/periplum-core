@@ -92,4 +92,4 @@ Start your own from the **[periplum template](https://github.com/periplum/peripl
 
 ## License & credits
 
-MIT © Corentin Méhat ([@cmehat](https://github.com/cmehat)) / [oyatrino](https://github.com/oyatrino).
+MIT © Corentin Méhat ([@cmehat](https://github.com/cmehat)) / [Oyatrino Solutions](https://github.com/oyatrino).
