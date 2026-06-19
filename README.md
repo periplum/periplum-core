@@ -57,6 +57,13 @@ Periplum.render({
 Each item carries one or more `placements`, each tied to a basemap `id`. Tile/image
 basemaps use `lat`/`lon`; celestial basemaps use `ra`/`dec`.
 
+**Already have data in another shape?** Pass `adapt: (raw) => items[]` to transform whatever
+your `dataUrl` returns into the canonical items — no separate build step or duplicated data
+file needed. (Or pass `data:` directly to skip the fetch.) This is how the
+[Tezos](https://github.com/oyatrino/tezosprotocolmap) and
+[Ethereum](https://github.com/oyatrino/ethupgrademap) upgrade maps consume Periplum from
+their existing JSON.
+
 ## Basemap types
 
 - `tiles` — an XYZ tile layer (Earth via OSM; Moon/Mars via planetary tile servers).

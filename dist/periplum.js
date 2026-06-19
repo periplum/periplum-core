@@ -1,6 +1,6 @@
 /*!
  * Periplum — a chronological history map across configurable basemaps
- * (Earth / Moon / Mars tiles, image overlays, celestial). v0.2.0
+ * (Earth / Moon / Mars tiles, image overlays, celestial). v0.3.0
  *
  * Usage (in a consumer page, after loading Leaflet):
  *   Periplum.render({ title, dataUrl, repo, basemaps:[…], statusColors:{…}, theme:{…}, seo:{…}, favicon })
@@ -320,29 +320,37 @@
       });
     }
 
-    fetch(cfg.dataUrl).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-      .then(function (data) {
-        items = (data && data.items) || [];
-        cfg.basemaps.forEach(function (bm) {
-          if (cfg.basemaps.length > 1) {
-            var b = document.createElement("button"); b.textContent = bm.name || bm.id;
-            b.setAttribute("aria-pressed", "false");
-            b.addEventListener("click", function () { setBasemap(bm.id); });
-            sw.appendChild(b); btns[bm.id] = b;
-          }
-          new (PlaybackCtl())().addTo(maps[bm.id]);
-          addLegend(maps[bm.id]);
-        });
-        var dts = items.filter(function (it) { return it.date; }).map(function (it) { return new Date(it.date).getTime(); });
-        if (dts.length) {
-          var minTs = Math.min.apply(null, dts), maxTs = Date.now();
-          cfg.basemaps.forEach(function (bm) { new (SliderCtl(minTs, maxTs))().addTo(maps[bm.id]); });
+    // `raw` is the fetched JSON (or cfg.data). cfg.adapt(raw) -> items[] lets a consumer
+    // map a non-canonical source (e.g. an existing protocols.json) without a build step.
+    function start(raw) {
+      items = cfg.adapt ? (cfg.adapt(raw) || []) : ((raw && raw.items) || raw || []);
+      cfg.basemaps.forEach(function (bm) {
+        if (cfg.basemaps.length > 1) {
+          var b = document.createElement("button"); b.textContent = bm.name || bm.id;
+          b.setAttribute("aria-pressed", "false");
+          b.addEventListener("click", function () { setBasemap(bm.id); });
+          sw.appendChild(b); btns[bm.id] = b;
         }
-        showAll();
-        setBasemap(cfg.basemaps[0].id);
-      })
-      .catch(function (err) { console.error("Periplum: failed to load data:", err); });
+        new (PlaybackCtl())().addTo(maps[bm.id]);
+        addLegend(maps[bm.id]);
+      });
+      var dts = items.filter(function (it) { return it.date; }).map(function (it) { return new Date(it.date).getTime(); });
+      if (dts.length) {
+        var minTs = Math.min.apply(null, dts), maxTs = Date.now();
+        cfg.basemaps.forEach(function (bm) { new (SliderCtl(minTs, maxTs))().addTo(maps[bm.id]); });
+      }
+      showAll();
+      setBasemap(cfg.basemaps[0].id);
+    }
+
+    if (cfg.data) {
+      start(cfg.data);
+    } else {
+      fetch(cfg.dataUrl).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+        .then(start)
+        .catch(function (err) { console.error("Periplum: failed to load data:", err); });
+    }
   }
 
-  global.Periplum = { render: render, version: "0.2.0" };
+  global.Periplum = { render: render, version: "0.3.0" };
 })(window);
