@@ -31,7 +31,9 @@ Load Leaflet, then this engine, then call `Periplum.render(config)`:
 ```html
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/periplum/periplum-core@v0.3.0/dist/periplum.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/periplum/periplum-core@v0.3.2/dist/periplum.js"
+        integrity="sha384-1JX16g07d5qE+6X/Yr9t0YQk/gP8Zhr3iRhsd8Rlpa5adN7HHeo6UTOxxz3NRmPk"
+        crossorigin="anonymous"></script>
 <script>
 Periplum.render({
   title: "My voyage",
