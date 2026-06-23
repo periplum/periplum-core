@@ -7,7 +7,7 @@
 - [x] **Celestial basemap renderer** — RA/Dec star chart with constellations & bright
   stars. (v0.2.0)
 - [x] **Glyph/icon markers** — per-status emoji markers via `statusIcons`. (v0.2.0)
-- [ ] **Mobile / small-screen view** — on a narrow viewport the map is cramped and, for
+- [x] **Mobile / small-screen view** — on a narrow viewport the map is cramped and, for
   wide routes, points fall off-screen. e.g. Magellan: after the dateline fix the route
   spans 360°+ of longitude, so on mobile the Pacific leg and later stops aren't visible
   and markers appear to "disappear". Fix: fit-to-data bounds on load (and on resize),

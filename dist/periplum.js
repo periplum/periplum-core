@@ -1,6 +1,6 @@
 /*!
  * Periplum — a chronological history map across configurable basemaps
- * (Earth / Moon / Mars tiles, image overlays, celestial). v0.3.2
+ * (Earth / Moon / Mars tiles, image overlays, celestial). v0.3.3
  *
  * By Corentin Méhat (@cmehat) / Oyatrino Solutions · MIT License
  *
@@ -64,7 +64,9 @@
       ".leaflet-tooltip.pp-refstar{background:transparent;border:none;box-shadow:none;color:#aeb8e8;font-size:10px;padding:0;text-shadow:0 0 4px #000}" +
       ".leaflet-tooltip.pp-constel{background:transparent;border:none;box-shadow:none;color:#5b6bb0;font-size:11px;font-style:italic;letter-spacing:1px;padding:0;text-transform:uppercase}" +
       ".leaflet-div-icon.pp-glyph{background:none;border:none;box-shadow:none;font-size:18px;line-height:24px;text-align:center}" +
-      ".pp-credit{display:flex;align-items:center;gap:5px;color:#fff;opacity:.6;font-size:12px;text-decoration:none}.pp-credit:hover{opacity:1}.pp-credit img{display:block}";
+      ".pp-credit{display:flex;align-items:center;gap:5px;color:#fff;opacity:.6;font-size:12px;text-decoration:none}.pp-credit:hover{opacity:1}.pp-credit img{display:block}" +
+      "#pp-title>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}" +
+      "@media (max-width:600px){#pp-title{gap:6px;padding:0 8px;font-size:13px}#pp-title>span:first-child{max-width:38vw}#pp-count{display:none}#pp-switch button{padding:5px 8px;font-size:12px}.pp-slider input{width:150px}.pp-slider,.pp-legend{font-size:11px;padding:6px 9px}}";
     document.head.appendChild(css);
   }
 
@@ -83,7 +85,7 @@
     var pp = document.createElement("a");
     pp.className = "pp-credit"; pp.href = "https://periplum.js.org";
     pp.target = "_blank"; pp.rel = "noopener noreferrer"; pp.title = "Built with Periplum";
-    pp.innerHTML = "<img src='https://cdn.jsdelivr.net/gh/periplum/periplum-core@v0.3.2/logo/periplum-mark-dark.svg' width='22' height='22' alt='Periplum'>";
+    pp.innerHTML = "<img src='https://cdn.jsdelivr.net/gh/periplum/periplum-core@v0.3.3/logo/periplum-mark-dark.svg' width='22' height='22' alt='Periplum'>";
     t.appendChild(pp);
     document.body.appendChild(t);
     cfg.basemaps.forEach(function (bm) {
@@ -155,14 +157,23 @@
       bm._fit = function () { im.fitBounds(bounds); };
       return im;
     }
-    var opts = { worldCopyJump: true, minZoom: bm.minZoom != null ? bm.minZoom : 2, maxZoom: bm.maxZoom || 18 };
+    // A circumnavigation (unwrapRoute) needs a wrapping world so a route can extend
+    // past ±180°. Every other map renders a single non-repeating world (noWrap +
+    // maxBounds) so it never tiles 2×/6× and can zoom out far enough to frame all
+    // points on a phone.
+    // noWrap + maxBounds (below) structurally prevent world-tiling, so a low minZoom
+    // is safe and lets fitBounds frame wide routes on small screens.
+    var wrap = !!cfg.unwrapRoute || !!bm.wrap;
+    var opts = { minZoom: bm.minZoom != null ? bm.minZoom : 1, maxZoom: bm.maxZoom || 18 };
+    if (wrap) opts.worldCopyJump = true;
     if (bm.crs === "EPSG4326") opts.crs = L.CRS.EPSG4326;
     var m = L.map(div, opts);
     var layerOpts = { attribution: bm.attribution || "", maxZoom: opts.maxZoom, minZoom: opts.minZoom };
     if (bm.subdomains) layerOpts.subdomains = bm.subdomains;
-    if (bm.noWrap) layerOpts.noWrap = true;
+    if (!wrap || bm.noWrap) layerOpts.noWrap = true;
     if (bm.tms) layerOpts.tms = true;
     L.tileLayer(bm.tileUrl, layerOpts).addTo(m);
+    if (!wrap) { m.setMaxBounds([[-90, -180], [90, 180]]); m.options.maxBoundsViscosity = 1.0; }
     var view = bm.initialView || [20, 0];
     m.setView(view, bm.initialZoom != null ? bm.initialZoom : opts.minZoom);
     if (bm.type === "image" || bm.crs === "EPSG4326") div.classList.add("pp-img-bm");
@@ -322,7 +333,9 @@
     // ---- basemap switcher ----
     var sw = document.getElementById("pp-switch");
     var btns = {};
+    var activeId = null;
     function setBasemap(id) {
+      activeId = id;
       cfg.basemaps.forEach(function (bm) {
         var on = bm.id === id;
         document.getElementById("pp-view-" + bm.id).classList.toggle("active", on);
@@ -351,8 +364,37 @@
         var minTs = Math.min.apply(null, dts), maxTs = Date.now();
         cfg.basemaps.forEach(function (bm) { new (SliderCtl(minTs, maxTs))().addTo(maps[bm.id]); });
       }
+
+      // Frame each non-celestial basemap to its actual data on first show, so all
+      // points are visible without manual panning (the main mobile/small-screen fix).
+      cfg.basemaps.forEach(function (bm) {
+        if (bm.type === "celestial") return;
+        var r = { lastLon: null }, pts = [];
+        items.forEach(function (it) {
+          (it.placements || []).forEach(function (p) {
+            if (p.map === bm.id && (p.lat != null || bm.type === "celestial")) pts.push(placementLatLng(bm, p, r));
+          });
+        });
+        if (pts.length) {
+          var b = L.latLngBounds(pts);
+          var cap = bm.initialZoom != null ? bm.initialZoom : 5;
+          bm._fit = function () { maps[bm.id].fitBounds(b, { padding: [28, 28], maxZoom: cap }); };
+        }
+      });
+
       showAll();
       setBasemap(cfg.basemaps[0].id);
+
+      // Keep the active map sized to the viewport and re-framed on resize / rotate.
+      var resizeT = null;
+      window.addEventListener("resize", function () {
+        clearTimeout(resizeT);
+        resizeT = setTimeout(function () {
+          var bm = bmById[activeId]; if (!bm) return;
+          maps[activeId].invalidateSize();
+          if (bm._fit) bm._fit();
+        }, 200);
+      });
     }
 
     if (cfg.data) {
@@ -364,5 +406,5 @@
     }
   }
 
-  global.Periplum = { render: render, version: "0.3.2" };
+  global.Periplum = { render: render, version: "0.3.3" };
 })(window);
