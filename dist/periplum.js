@@ -1,6 +1,6 @@
 /*!
  * Periplum — a chronological history map across configurable basemaps
- * (Earth / Moon / Mars tiles, image overlays, celestial). v0.3.3
+ * (Earth / Moon / Mars tiles, image overlays, celestial). v0.3.4
  *
  * By Corentin Méhat (@cmehat) / Oyatrino Solutions · MIT License
  *
@@ -85,7 +85,7 @@
     var pp = document.createElement("a");
     pp.className = "pp-credit"; pp.href = "https://periplum.js.org";
     pp.target = "_blank"; pp.rel = "noopener noreferrer"; pp.title = "Built with Periplum";
-    pp.innerHTML = "<img src='https://cdn.jsdelivr.net/gh/periplum/periplum-core@v0.3.3/logo/periplum-mark-dark.svg' width='22' height='22' alt='Periplum'>";
+    pp.innerHTML = "<img src='https://cdn.jsdelivr.net/gh/periplum/periplum-core@v0.3.4/logo/periplum-mark-dark.svg' width='22' height='22' alt='Periplum'>";
     t.appendChild(pp);
     document.body.appendChild(t);
     cfg.basemaps.forEach(function (bm) {
@@ -138,7 +138,7 @@
     L.circleMarker(skyXY(56.5, 25.6), { radius: 0, opacity: 0, fillOpacity: 0, interactive: false }).addTo(map).bindTooltip("Pleiades", { permanent: true, direction: "center", className: "pp-constel" });
   }
 
-  function makeMap(bm) {
+  function makeMap(bm, cfg) {
     var div = document.getElementById("pp-view-" + bm.id);
     if (bm.type === "celestial") {
       var cm = L.map(div, { crs: L.CRS.Simple, minZoom: bm.minZoom != null ? bm.minZoom : -3, maxZoom: bm.maxZoom || 4, zoomSnap: 0.25, attributionControl: !!bm.attribution });
@@ -188,7 +188,7 @@
 
     var maps = {};            // basemap id -> L.map
     var bmById = {};
-    cfg.basemaps.forEach(function (bm) { bmById[bm.id] = bm; maps[bm.id] = makeMap(bm); });
+    cfg.basemaps.forEach(function (bm) { bmById[bm.id] = bm; maps[bm.id] = makeMap(bm, cfg); });
 
     var statusColors = cfg.statusColors || {};
     var defaultColor = cfg.defaultColor || "#888888";
@@ -406,5 +406,5 @@
     }
   }
 
-  global.Periplum = { render: render, version: "0.3.3" };
+  global.Periplum = { render: render, version: "0.3.4" };
 })(window);
