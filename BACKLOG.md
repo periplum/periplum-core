@@ -13,8 +13,15 @@
   and markers appear to "disappear". Fix: fit-to-data bounds on load (and on resize),
   responsive header/controls, and for round-the-world routes either allow lower minZoom or
   wrap markers into the visible world copy.
-- [ ] Optional: fit-to-route on load for very wide (round-the-world) datasets.
-  *(folded into the mobile item above)*
+- [x] **SRI integrity** on the engine `<script>`, recomputed by the upgrade bot. (v0.3.2)
+- [x] **adapt() hook** — consume non-canonical data (e.g. existing protocols.json). (v0.3.0)
+
+### Open engine ideas
+- [ ] **Mars / planetary tile basemap** preset (for the multi-body showpiece below).
+- [ ] **Deep-link state** — encode active basemap + slider date in the URL hash so a view
+  is shareable.
+- [ ] **Clustering / declutter** for dense point sets (e.g. full exoplanet catalogue).
+- [ ] **Keyboard-step** through items (←/→) alongside playback.
 
 ## Showcase datasets to map
 - **Earth:** Antarctic race (Amundsen vs Scott), Darwin's *Beagle*, Shackleton, Lewis &
@@ -25,10 +32,11 @@
 - **Multi-body showpiece:** "Robotic landings across the Solar System" — switch basemaps
   between Venus (Venera), Moon, Mars, Titan (Huygens), comet 67P (Philae).
 
-## In progress / planned consumers
-- [x] periplum/magellan (Earth, static)
-- [ ] periplum/worldcup_fifa (Earth, evolving ~4yr)
-- [ ] periplum/lunar (Moon, evolving via Wikidata)
-- [ ] periplum/exoplanets (celestial, evolving via NASA Exoplanet Archive) — needs v0.2.0
-- [ ] periplum/olympics (Earth, ☀️/❄️ icons) — needs v0.2.0
-- [ ] periplum/template ("Use this template" skeleton)
+## Shipped consumers
+- [x] periplum/magellan — Earth, static
+- [x] periplum/worldcup-soccer — Earth, curated
+- [x] periplum/lunar — Moon image basemap, Wikidata source
+- [x] periplum/exoplanets — celestial, NASA Exoplanet Archive
+- [x] periplum/olympics — Earth, ☀️/❄️ statusIcons
+- [x] periplum/template — "Use this template" skeleton
+- [x] oyatrino/tezosprotocolmap & oyatrino/ethupgrademap — migrated to Periplum via adapt()
